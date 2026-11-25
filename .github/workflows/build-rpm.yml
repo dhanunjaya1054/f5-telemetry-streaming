@@ -1,0 +1,14 @@
+name: build-rpm
+on: [workflow_dispatch, push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 18 }
+      - run: sudo apt-get update && sudo apt-get install -y rpm
+      - run: sed -i 's/"version": "1.41.0-1"/"version": "1.41.0-293"/' package.json
+      - run: npm ci && npm run ci:application && npm run build
+      - uses: actions/upload-artifact@v4
+        with: { name: f5-telemetry-rpm, path: dist/*.rpm }
